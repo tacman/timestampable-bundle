@@ -22,7 +22,7 @@ class TimestampableEventSubscriber implements EventSubscriber
 
     public function __construct(
         Configuration $configuration,
-        ClockInterface $clock
+        ClockInterface $clock,
     ) {
         $this->configuration = $configuration;
         $this->clock = $clock;
