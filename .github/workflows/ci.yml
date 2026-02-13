@@ -11,23 +11,15 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        include:
+        php-version: ['8.2', '8.4', '8.5']
+        symfony-version: ['5.4.*', '6.4.*', '7.0.*']
+        doctrine-orm-version: ['2.20.*', '3.0.*']
+        exclude:
+          # Doctrine ORM 3.0 requires PHP 8.4+
           - php-version: '8.2'
-            symfony-version: '6.4.*'
-          - php-version: '8.2'
-            symfony-version: '7.0.*'
+            doctrine-orm-version: '3.0.*'
 
-    name: PHP ${{ matrix.php-version }} · SF ${{ matrix.symfony-version }}
-
-    services:
-      mysql:
-        image: mysql:8.0
-        env:
-          MYSQL_ROOT_PASSWORD: root
-          MYSQL_DATABASE: test
-        ports:
-          - 3306:3306
-        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+    name: PHP ${{ matrix.php-version }} · SF ${{ matrix.symfony-version }} · Doctrine ORM ${{ matrix.doctrine-orm-version }}
 
     steps:
       - uses: actions/checkout@v4
@@ -36,12 +28,16 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-version }}
-          extensions: mbstring, xml, ctype, iconv, intl, json
-          coverage: ${{ matrix.symfony-version == '7.0.*' && 'pcov' || 'none' }}
+          extensions: mbstring, xml, ctype, iconv, intl, json, pdo_sqlite, sqlite3
+          coverage: ${{ matrix.php-version == '8.5' && matrix.symfony-version == '7.0.*' && matrix.doctrine-orm-version == '3.0.*' && 'pcov' || 'none' }}
 
       - name: Constrain Symfony version
         run: |
           sed -ri 's/"symfony\/([^"]+)": "[^"]+"/"symfony\/\1": "${{ matrix.symfony-version }}"/g' composer.json
+
+      - name: Constrain Doctrine ORM version
+        run: |
+          sed -ri 's/"doctrine\/orm": "[^"]+"/"doctrine\/orm": "${{ matrix.doctrine-orm-version }}"/' composer.json
 
       - name: Install Composer dependencies
         uses: ramsey/composer-install@v3
@@ -49,20 +45,18 @@ jobs:
           composer-options: "--prefer-dist --no-progress --no-interaction --optimize-autoloader"
 
       - name: Run PHP-CS-Fixer
-        if: matrix.symfony-version == '7.0.*'
+        if: matrix.php-version == '8.2' && matrix.symfony-version == '5.4.*' && matrix.doctrine-orm-version == '2.20.*'
         run: vendor/bin/php-cs-fixer fix --dry-run --stop-on-violation --using-cache=no
 
       - name: Run PHPStan
-        if: matrix.symfony-version == '7.0.*'
+        if: matrix.php-version == '8.5' && matrix.symfony-version == '7.0.*' && matrix.doctrine-orm-version == '3.0.*'
         run: vendor/bin/phpstan analyse src tests --configuration=phpstan.neon --memory-limit=1G
 
       - name: Run PHPUnit tests
-        env:
-          DATABASE_URL: mysql://root:root@127.0.0.1:3306/test?serverVersion=8.0
-        run: vendor/bin/phpunit ${{ matrix.symfony-version == '7.0.*' && '--coverage-clover coverage.xml' || '' }}
+        run: vendor/bin/phpunit ${{ matrix.php-version == '8.5' && matrix.symfony-version == '7.0.*' && matrix.doctrine-orm-version == '3.0.*' && '--coverage-clover coverage.xml' || '' }}
 
       - name: Upload coverage to Codecov
-        if: matrix.symfony-version == '7.0.*'
+        if: matrix.php-version == '8.5' && matrix.symfony-version == '7.0.*' && matrix.doctrine-orm-version == '3.0.*'
         uses: codecov/codecov-action@v4
         with:
           files: ./coverage.xml
