@@ -19,6 +19,9 @@ class Configuration implements ConfigurationInterface
         /** @var ArrayNodeDefinition $node */
         $node = $treeBuilder->getRootNode();
         $node->children()
+            ->booleanNode('metadata_cache_warmer_enabled')
+                ->defaultFalse()
+            ->end()
             ->arrayNode('default')
                 ->addDefaultsIfNotSet()
                 ->children()

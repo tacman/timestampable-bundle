@@ -7,7 +7,7 @@ namespace Andante\TimestampableBundle\Tests\App;
 use Andante\TimestampableBundle\Tests\App\Compiler\MakeCacheWarmerServicesPublicCompilerPass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
-class TimestampableAppKernel extends AppKernel
+class CacheWarmerTestAppKernel extends AppKernel
 {
     public function build(ContainerBuilder $container): void
     {

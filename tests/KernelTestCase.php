@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Andante\TimestampableBundle\Tests;
 
-use Andante\TimestampableBundle\Tests\Functional\BaseFunctionalTest;
+use Andante\TimestampableBundle\Tests\Functional\FunctionalTestCase;
 
-class KernelTestCase extends BaseFunctionalTest
+class KernelTestCase extends FunctionalTestCase
 {
 }

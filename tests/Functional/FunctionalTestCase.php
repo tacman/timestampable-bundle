@@ -12,7 +12,7 @@ use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-abstract class BaseFunctionalTest extends KernelTestCase
+abstract class FunctionalTestCase extends KernelTestCase
 {
     protected function setUp(): void
     {

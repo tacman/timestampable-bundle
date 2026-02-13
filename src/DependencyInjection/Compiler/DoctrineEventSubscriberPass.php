@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Andante\TimestampableBundle\DependencyInjection\Compiler;
 
 use Andante\TimestampableBundle\EventSubscriber\TimestampableEventSubscriber;
+use Andante\TimestampableBundle\Timestampable\Registry;
 use Composer\InstalledVersions;
 use Doctrine\ORM\Events;
 use Psr\Clock\ClockInterface;
@@ -25,7 +26,7 @@ class DoctrineEventSubscriberPass implements CompilerPassInterface
                 self::TIMESTAMPABLE_SUBSCRIBER_SERVICE_ID,
                 TimestampableEventSubscriber::class
             )
-            ->addArgument(new Reference('andante_timestampable.configuration'))
+            ->addArgument(new Reference(Registry::class))
             ->addTag('doctrine.event_subscriber');
         $symfonyDoctrineBridgeVersion = InstalledVersions::getVersion('symfony/doctrine-bridge');
         if (null !== $symfonyDoctrineBridgeVersion && \version_compare($symfonyDoctrineBridgeVersion, '6.3', '>=')) {

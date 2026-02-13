@@ -2,11 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Andante\TimestampableBundle\Tests\Functional;
+namespace Andante\TimestampableBundle\Tests\Functional\EventSubscriber;
 
 use Andante\TimestampableBundle\Tests\App\TimestampableAppKernel;
 use Andante\TimestampableBundle\Tests\Fixtures\Entity\Address;
 use Andante\TimestampableBundle\Tests\Fixtures\Entity\Organization;
+use Andante\TimestampableBundle\Tests\Functional\TimestampableConfigTrait;
 use Andante\TimestampableBundle\Tests\KernelTestCase;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\EntityManagerInterface;
@@ -15,30 +16,14 @@ use Symfony\Component\HttpKernel\KernelInterface;
 
 class MappingTest extends KernelTestCase
 {
+    use TimestampableConfigTrait;
+
     protected static function createKernel(array $options = []): KernelInterface
     {
-        return new TimestampableAppKernel('test', true, [
-            'andante_timestampable' => [
-                'default' => [
-                    'created_at_property_name' => 'createdAt',
-                    'updated_at_property_name' => 'updatedAt',
-                ],
-                'entity' => [
-                    Organization::class => [
-                        'created_at_property_name' => 'createdAt',
-                    ],
-                    Address::class => [
-                        'created_at_property_name' => 'created',
-                        'updated_at_property_name' => 'updated',
-                        'created_at_column_name' => 'created_date',
-                        'updated_at_column_name' => 'updated_date',
-                    ],
-                ],
-            ],
-        ]);
+        return new TimestampableAppKernel('test', true, self::getTimestampableConfig());
     }
 
-    public function testMapping(): void
+    public function testDoctrineFieldMappingsMatchBundleConfig(): void
     {
         /** @var EntityManagerInterface $em */
         $em = static::getTestContainer()->get('doctrine.orm.default_entity_manager');

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Andante\TimestampableBundle\Tests\Functional;
+namespace Andante\TimestampableBundle\Tests\Functional\EventSubscriber;
 
 use Andante\TimestampableBundle\EventSubscriber\TimestampableEventSubscriber;
 use Andante\TimestampableBundle\Tests\App\TimestampableAppKernel;

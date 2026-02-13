@@ -2,13 +2,24 @@
 
 declare(strict_types=1);
 
+use Andante\TimestampableBundle\Tests\App\Clock\ClockMock;
 use Composer\InstalledVersions;
+use Psr\Clock\ClockInterface;
+use Symfony\Component\Clock\Clock;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
+use Symfony\Component\DependencyInjection\Loader\Configurator\ReferenceConfigurator;
 
 return static function (ContainerConfigurator $containerConfigurator): void {
     $containerConfigurator->parameters()
         ->set('kernel.secret', 'test_secret')
         ->set('locale', 'en');
+
+    $services = $containerConfigurator->services();
+
+    // Clock mock for tests: decorates real clock and allows freezing time
+    $services->set('andante_timestampable.clock.inner', Clock::class);
+    $services->set(ClockInterface::class, ClockMock::class)
+        ->args([new ReferenceConfigurator('andante_timestampable.clock.inner')]);
 
     $frameworkBundleVersion = InstalledVersions::getVersion('symfony/framework-bundle');
     $frameworkConfig = [
