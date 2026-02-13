@@ -3,14 +3,14 @@
 #### Symfony Bundle - [AndanteProject](https://github.com/andanteproject)
 [![Latest Version](https://img.shields.io/github/release/andanteproject/timestampable-bundle.svg)](https://github.com/andanteproject/timestampable-bundle/releases)
 ![Github actions](https://github.com/andanteproject/timestampable-bundle/actions/workflows/ci.yml/badge.svg?branch=main)
-![Framework](https://img.shields.io/badge/Symfony-4.x|5.x|6.x|7.x-informational?Style=flat&logo=symfony)
+![Framework](https://img.shields.io/badge/Symfony-5.x|6.x|7.x|8.x-informational?Style=flat&logo=symfony)
 ![Php8](https://img.shields.io/badge/PHP-%208.x-informational?style=flat&logo=php)
 ![PhpStan](https://img.shields.io/badge/PHPStan-Level%208-success?style=flat&logo=php) 
 
 A Symfony Bundle to handle entity `createdAt` and `updatedAt` dates with Doctrine. 🕰 
 
 ## Requirements
-Symfony 4.x-7.x and PHP 8.2.
+Symfony 5.x–8.x and PHP 8.2.
 
 ## Install
 Via [Composer](https://getcomposer.org/):
