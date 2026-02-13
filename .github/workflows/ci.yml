@@ -34,6 +34,10 @@ jobs:
       - name: Constrain Symfony version
         run: |
           sed -ri 's/"symfony\/([^"]+)": "[^"]+"/"symfony\/\1": "${{ matrix.symfony-version }}"/g' composer.json
+          # symfony/clock does not exist for 5.4 (added in 6.2); keep it installable on 5.4 jobs
+          if [ "${{ matrix.symfony-version }}" = "5.4.*" ]; then
+            sed -ri 's/"symfony\/clock": "[^"]+"/"symfony\/clock": "^6.2 | ^7.0"/' composer.json
+          fi
 
       - name: Constrain Doctrine ORM version
         run: |
