@@ -4,34 +4,43 @@ declare(strict_types=1);
 
 namespace Andante\TimestampableBundle\Tests\Functional;
 
+use Andante\TimestampableBundle\Tests\App\TimestampableAppKernel;
 use Andante\TimestampableBundle\Tests\Fixtures\Entity\Address;
 use Andante\TimestampableBundle\Tests\Fixtures\Entity\Organization;
-use Andante\TimestampableBundle\Tests\HttpKernel\AndanteTimestampableKernel;
 use Andante\TimestampableBundle\Tests\KernelTestCase;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpKernel\KernelInterface;
 
 class TimestampableTest extends KernelTestCase
 {
-    protected function setUp(): void
+    protected static function createKernel(array $options = []): KernelInterface
     {
-        parent::setUp();
-        self::bootKernel();
-    }
-
-    protected static function createKernel(array $options = []): AndanteTimestampableKernel
-    {
-        /** @var AndanteTimestampableKernel $kernel */
-        $kernel = parent::createKernel($options);
-        $kernel->addConfig('/config/custom_mapping.php');
-
-        return $kernel;
+        return new TimestampableAppKernel('test', true, [
+            'andante_timestampable' => [
+                'default' => [
+                    'created_at_property_name' => 'createdAt',
+                    'updated_at_property_name' => 'updatedAt',
+                ],
+                'entity' => [
+                    Organization::class => [
+                        'created_at_property_name' => 'createdAt',
+                    ],
+                    Address::class => [
+                        'created_at_property_name' => 'created',
+                        'updated_at_property_name' => 'updated',
+                        'created_at_column_name' => 'created_date',
+                        'updated_at_column_name' => 'updated_date',
+                    ],
+                ],
+            ],
+        ]);
     }
 
     public function testShouldSetTimestamps(): void
     {
         $this->createSchema();
         /** @var EntityManagerInterface $em */
-        $em = self::getContainer()->get('doctrine.orm.default_entity_manager');
+        $em = self::getTestContainer()->get('doctrine.orm.default_entity_manager');
 
         $address1 = (new Address())->setName('Address1');
         $organization1 = (new Organization())->setName('Organization1');

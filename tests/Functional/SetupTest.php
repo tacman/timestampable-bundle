@@ -5,33 +5,34 @@ declare(strict_types=1);
 namespace Andante\TimestampableBundle\Tests\Functional;
 
 use Andante\TimestampableBundle\EventSubscriber\TimestampableEventSubscriber;
-use Andante\TimestampableBundle\Tests\HttpKernel\AndanteTimestampableKernel;
+use Andante\TimestampableBundle\Tests\App\TimestampableAppKernel;
+use Andante\TimestampableBundle\Tests\Fixtures\Entity\Address;
 use Andante\TimestampableBundle\Tests\KernelTestCase;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Events;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\HttpKernel\KernelInterface;
 
 class SetupTest extends KernelTestCase
 {
-    protected function setUp(): void
+    protected static function createKernel(array $options = []): KernelInterface
     {
-        parent::setUp();
-        self::bootKernel();
-    }
-
-    protected static function createKernel(array $options = []): AndanteTimestampableKernel
-    {
-        /** @var AndanteTimestampableKernel $kernel */
-        $kernel = parent::createKernel($options);
-        $kernel->addConfig('/config/basic.php');
-
-        return $kernel;
+        return new TimestampableAppKernel('test', true, [
+            'andante_timestampable' => [
+                'entity' => [
+                    Address::class => [
+                        'created_at_property_name' => 'created',
+                        'updated_at_property_name' => 'updated',
+                    ],
+                ],
+            ],
+        ]);
     }
 
     public function testSubscriberSetup(): void
     {
         /** @var ManagerRegistry $managerRegistry */
-        $managerRegistry = self::getContainer()->get('doctrine');
+        $managerRegistry = self::getTestContainer()->get('doctrine');
         /** @var EntityManagerInterface $em */
         foreach ($managerRegistry->getManagers() as $em) {
             $evm = $em->getEventManager();
@@ -40,7 +41,7 @@ class SetupTest extends KernelTestCase
             foreach ($allListeners as $name => $listeners) {
                 if (\in_array($name, [Events::prePersist, Events::preUpdate, Events::loadClassMetadata])) {
                     $listenerRegistered = \array_reduce($listeners, static fn (
-                        bool $carry, $service
+                        bool $carry, $service,
                     ) => $carry ? $carry : $service instanceof TimestampableEventSubscriber, false);
 
                     self::assertTrue($listenerRegistered);
