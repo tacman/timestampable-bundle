@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Andante\TimestampableBundle;
 
+use Andante\TimestampableBundle\DependencyInjection\Compiler\CacheWarmerCompilerPass;
 use Andante\TimestampableBundle\DependencyInjection\Compiler\DoctrineEventSubscriberPass;
 use Symfony\Component\DependencyInjection\Compiler\PassConfig;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -16,5 +17,6 @@ class AndanteTimestampableBundle extends Bundle
         parent::build($container);
 
         $container->addCompilerPass(new DoctrineEventSubscriberPass(), PassConfig::TYPE_BEFORE_OPTIMIZATION, 10);
+        $container->addCompilerPass(new CacheWarmerCompilerPass());
     }
 }
