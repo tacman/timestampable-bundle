@@ -15,7 +15,7 @@ Symfony 5.x–8.x and PHP 8.2.
 ## Install
 Via [Composer](https://getcomposer.org/):
 ```bash
-$ composer require andanteproject/timestampable-bundle
+composer require andanteproject/timestampable-bundle
 ```
 
 ## Features
