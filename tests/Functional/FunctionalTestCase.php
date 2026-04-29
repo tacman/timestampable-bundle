@@ -36,7 +36,7 @@ abstract class FunctionalTestCase extends KernelTestCase
      */
     protected static function getTestContainer(): ContainerInterface
     {
-        if (static::class === KernelTestCase::class) {
+        if (KernelTestCase::class === static::class) {
             $kernel = static::$kernel;
             \assert(null !== $kernel, 'Kernel must be booted');
 
